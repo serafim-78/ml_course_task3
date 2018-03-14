@@ -3,7 +3,7 @@ import numpy as np
 img=cv2.imread('gal_gadot.png', 0)
 height, width = img.shape[:2]
 #H-matrix
-H = np.array([[1.0/2, 1.0/2], [-1.0/2, 1.0/2]])
+H = np.array([[1.0/2**0.5, 1.0/2**0.5], [-1.0/2**0.5, 1.0/2**0.5]])
 for k in range(1,5):
     if height>width:
         L=np.zeros(shape=(height/2, width))
@@ -18,5 +18,6 @@ for k in range(1,5):
                 L[i, j] = np.dot(H, np.row_stack((img[i, 2 * j], img[i, 2 * j + 1])))[0]
         width/=2
     title="Image #"+k.__str__()
+    img=L
     cv2.imshow(title,L)
     cv2.waitKey(0)
