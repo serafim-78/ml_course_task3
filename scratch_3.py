@@ -2,22 +2,29 @@ import cv2
 import numpy as np
 img=cv2.imread('gal_gadot.png', 0)
 height, width = img.shape[:2]
+imgs=[img]
 #H-matrix
-H = np.array([[1.0/2**0.5, 1.0/2**0.5], [-1.0/2**0.5, 1.0/2**0.5]])
-for k in range(1,5):
-    if height>width:
-        L=np.zeros(shape=(height/2, width))
-        for i in range(0, height/2):
-            for j in range(0, width):
-                L[i, j] = np.dot(H, np.row_stack((img[2 *i,  j], img[2*i+1, j ])))[0]
-        height/=2
-    else:
-        L = np.zeros(shape=(height , width/ 2))
-        for i in range(0, height):
-            for j in range(0, width/2):
-                L[i, j] = np.dot(H, np.row_stack((img[i, 2 * j], img[i, 2 * j + 1])))[0]
-        width/=2
-    title="Image #"+k.__str__()
-    img=L
-    cv2.imshow(title,L)
-    cv2.waitKey(0)
+Haar = np.array([[1.0/2**0.5, 1.0/2**0.5], [-1.0/2**0.5, 1.0/2**0.5]])
+print "Please, set count of division (>0). Advice 2:"
+div=int(input())
+print "Please, stand by..."
+for cim in range(0,div):
+    a=len(imgs)
+    for k in range(0,a):
+        hw=height>width
+        wh=1-hw
+        L=np.zeros(shape=(height/(2**hw), width/(2**wh)))
+        H=np.zeros(shape=(height/(2**hw), width/(2**wh)))
+        for i in range(0, height/2**hw):
+            for j in range(0, width/2**wh):
+                L[i, j] = np.dot(Haar, np.row_stack((imgs[0][(2**hw) *i,  (2**wh)*j], imgs[0][(2**hw)*i+hw, (2**wh)*j+wh])))[0]
+                H[i,j]= np.dot(Haar, np.row_stack((imgs[0][(2**hw) *i,  (2**wh)*j], imgs[0][(2**hw)*i+hw, (2**wh)*j+wh])))[1]
+        imgs.remove(imgs[0])
+        imgs.append(L)
+        imgs.append(H)
+    height /= 2 ** hw
+    width /= 2 ** wh
+for i in range(0, len(imgs)):
+    title="C:/Image#"+(i+1).__str__()+".png"
+    cv2.imwrite(title, imgs[i])
+print "Images saved on disk C"
